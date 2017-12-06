@@ -1,0 +1,3 @@
+[submodule "ucos-ii-stm32f103ze"]
+	path = ucos-ii-stm32f103ze
+	url = git@github.com:Qinka/ucos-ii-stm32f103ze.git
