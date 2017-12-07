@@ -91,11 +91,11 @@ void Taskq1(void *pdata) {
 		mg=OSQPend(q1,0,&err);
 		switch(err) {
 			case OS_ERR_NONE:
-        kprint("Task %u has got the %s", id, (char *)mg);
+        kprint("Task %b has got the %s", id, (char *)mg);
         OSTimeDlyHMSM(0, 0, 0, 200*(4-id));
         break;
 			default :
-        kprint("Queue1 %u is empty.",id);
+        kprint("Queue1 %b is empty.",id);
         OSTimeDlyHMSM(0, 0, 0, 200*(4-id));
         break;
 		}
@@ -116,11 +116,11 @@ void Taskq2(void *pdata) {
 		mg=OSQPend(q2,0,&err);
 		switch(err) {
       case OS_ERR_NONE:
-        kprint("Task %u has got the %s. \n", id+3, (char *)mg);
+        kprint("Task %b has got the %s. \n", id+3, (char *)mg);
         OSTimeDlyHMSM(0, 0, 0, 200*(4-id));
         break;
       default:
-        kprint("queue2  is empty,%u can't got the message.", id+3);
+        kprint("queue2  is empty,%b can't got the message.", id+3);
         OSTimeDlyHMSM(0, 0, 0, 200*(4-id));
         break;
 			}
@@ -152,7 +152,7 @@ void  TaskCon (void *pdata) {
 			err = OSQPostFront(q1,(void*)s[i]);
 			switch(err)	{
 				case OS_ERR_NONE:
-					kprint("the queue1 %u add %s",i,s[i]);
+					kprint("the queue1 %b add %s",i,s[i]);
           OSTimeDlyHMSM(0, 0, 0, 150);
 					break;
 				case OS_ERR_Q_FULL:
@@ -170,7 +170,7 @@ void  TaskCon (void *pdata) {
 			err = OSQPost(q2,(void*)t[j]);
 			switch(err)	{
 				case OS_ERR_NONE:
-					kprint("the queue2 %u add %s",j,t[j]);
+					kprint("the queue2 %b add %s",j,t[j]);
           OSTimeDlyHMSM(0, 0, 0, 150);
 					break;
 				case OS_ERR_Q_FULL:

@@ -75,20 +75,20 @@ void Task0(void *pdata) {
   INT32U  id;
 	id=*(int *)pdata;
   while(1) {
-    kprint("Task %u is waitting a event.",id);
+    kprint("Task %b is waitting a event.",id);
     OSTimeDly(200);
-    kprint("The event of Task %u come.",id);
-    kprint("Task %u is try to get mutex.",id);
+    kprint("The event of Task %b come.",id);
+    kprint("Task %b is try to get mutex.",id);
     OSSemPend(mutex,0,&err);
 		switch(err) {
 			case OS_ERR_NONE:
-        kprint("Task %u has got the mutex.\n",id);
+        kprint("Task %b has got the mutex.\n",id);
         break;
 			default:
-				kprint("Task %u is suspended.\n",id);
+				kprint("Task %b is suspended.\n",id);
 		}
 		OSTimeDly(200);
-		kprint("Task %u release mutex.",id);
+		kprint("Task %b release mutex.",id);
     OSSemPost(mutex);
 	 }
 }
@@ -99,9 +99,9 @@ void Task1(void *pdata) {
   INT32U  id;
 	id=*(int *)pdata;
   while(1) {
-    kprint("Task %u is waitting a event.",id);
+    kprint("Task %b is waitting a event.",id);
     OSTimeDly(1000);
-    kprint("The event of Task %u come.",id);
+    kprint("The event of Task %b come.",id);
     OSTimeDly(1000);
 	 }
 }
@@ -113,19 +113,19 @@ void Task2(void *pdata) {
   INT16U value;
 	id=*(int *)pdata;
   while(1) {
-		kprint("Task %u is trying to get mutex.",id);
+		kprint("Task %b is trying to get mutex.",id);
     // Acquire mutex
     OSSemPend(mutex,0,&err);
 		switch(err)	{
       case OS_ERR_NONE:
-        kprint("Task %u has got the mutex.\n",id);
+        kprint("Task %b has got the mutex.\n",id);
         OSTimeDly(200);
         break;
       default :
-				kprint("Task %u  is failed to get mutex.\n",id);
+				kprint("Task %b is failed to get mutex.\n",id);
 				OSTimeDly(200);
 		}
-    kprint("Task %u release mutex.\n",id);
+    kprint("Task %b release mutex.\n",id);
     // Release
     OSSemPost(mutex);
 	}

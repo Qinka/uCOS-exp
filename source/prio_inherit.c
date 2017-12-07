@@ -66,13 +66,13 @@ void  Task (void *pdata) {
   INT8U  id;
 	id=*(int *)pdata;
   while(1) {
-		kprint("task %u try to get the mutex.", id);
+		kprint("task %b try to get the mutex.", id);
     // Acquire mutex to get continue
 		OSMutexPend(mutex, 0, &err);
-		kprint("task %u is getting the mutex.", id);
+		kprint("task %b is getting the mutex.", id);
     // Wait 200 minisecond 
 		OSTimeDlyHMSM(0, 0, 0, 200);
-    kprint("task %u   releases the mutex.", id);
+    kprint("task %b   releases the mutex.", id);
     // elease mutex
 		OSMutexPost(mutex); 
     // Wait (3-id)*150 minisecond
