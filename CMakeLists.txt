@@ -51,3 +51,11 @@ target_link_libraries(msg_queue ucos aikit)
 ## Timer Interrupt
 add_executable(timer_interrupt source/hardware.c source/timer_interrupt.c)
 target_link_libraries(timer_interrupt ucos aikit)
+
+## Priority Inherit
+add_executable(prio_inherit source/hardware.c source/prio_inherit.c)
+target_link_libraries(prio_inherit ucos aikit)
+
+## Priority Turn over
+add_executable(prio_turnover source/hardware.c source/prio_turnover.c)
+target_link_libraries(prio_turnover ucos aikit)
