@@ -34,7 +34,7 @@ void  main (void) {
   hardware_init();
   OS_CPU_SysTickInit(10000);
   OSInit();
-  put_with_unix_time_ln("Ucos-II loaded\n");
+  kprint("%u: Ucos-II loaded\n");
   OSTaskCreate(TaskStart, (void *)0, (OS_STK*)&TaskStartStk[TASK_STK_SIZE - 1], 4);
   OSStart();
 }
@@ -75,15 +75,12 @@ void  Task0 (void *pdata) {
 	while(1) {
     // light LED
     LEDR_ON;
-    put_with_unix_time_ln("");
-    put_with_unix_time_ln("======================================\n");
-    put_with_unix_time("The application tasks switch counts: 0x");
-    put_hex_u32(++count);
-    put_str_ln();
-    put_with_unix_time_ln("Task0 is   running.");
-    put_with_unix_time_ln("Task1 is   suspended.");
-    put_with_unix_time_ln("");
-    // light LED
+    kprint("");
+    kprint("The application tasks switch counts: 0x%u",++count);
+    kprint("Task0 is   running.");
+    kprint("Task1 is   suspended.");
+    kprint("");
+    // light LEDc
     LEDR_OFF;
     // suspend itself 
     err=OSTaskSuspend(5);
@@ -103,14 +100,11 @@ void  Task1 (void *pdata) {
     LED1_ON;
     LED2_OFF;
     OSTimeDly(150);
-    put_with_unix_time_ln("");
-    put_with_unix_time_ln("======================================\n");
-    put_with_unix_time("The application tasks switch counts: 0x");
-    put_hex_u32(++count);
-    put_str_ln();
-    put_with_unix_time_ln("Task0 is   suspended.");
-    put_with_unix_time_ln("Task1 is   running.");
-    put_with_unix_time_ln("");
+    kprint("");
+    kprint("The application tasks switch counts: 0x%u",++count);
+    kprint("Task0 is   suspended.");
+    kprint("Task1 is   running.");
+    kprint("");
     OSTimeDly(150);
     // change led
     LED1_OFF;

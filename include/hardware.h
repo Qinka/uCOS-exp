@@ -30,8 +30,8 @@ void beep_init(void);
 #define LEDB_ON  GPIO_ResetBits(GPIOB,GPIO_Pin_1)
 #define LEDB_OFF GPIO_SetBits(GPIOB,GPIO_Pin_1)
 
-#define BEEP_ON  GPIO_ResetBits(GPIOC,GPIO_Pin_0)
-#define BEEP_OFF GPIO_SetBits(GPIOC,GPIO_Pin_0)
+#define BEEP_OFF GPIO_ResetBits(GPIOC,GPIO_Pin_0)
+#define BEEP_ON  GPIO_SetBits(GPIOC,GPIO_Pin_0)
 
 #define KEY1_STAT GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0)
 #define KEY2_STAT GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)

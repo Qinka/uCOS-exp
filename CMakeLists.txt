@@ -29,10 +29,13 @@ endif (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
 ## add include path
 include_directories (include)
 include_directories (${PROJECT_SOURCE_DIR}/ucos-ii-stm32f103ze/include)
+include_directories (${PROJECT_SOURCE_DIR}/libaikit/include)
 
-link_directories(${PROJECT_SOURCE_DIR}/ucos-ii-stm32f103ze/build/lib)
+link_directories(${PROJECT_SOURCE_DIR}/ucos-ii-stm32f103ze/build)
+link_directories(${PROJECT_SOURCE_DIR}/libaikit/build)
+
 set (CMAKE_EXE_LINKER_FLAGS " -T ${PROJECT_SOURCE_DIR}/ucos-ii-stm32f103ze/ucos.ld")
 
 ## task manage
 add_executable(task_manage source/hardware.c source/task_manage.c)
-target_link_libraries(task_manage ucos)
+target_link_libraries(task_manage ucos aikit)
