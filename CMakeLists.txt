@@ -47,3 +47,7 @@ target_link_libraries(mem_manage ucos aikit)
 ## Mesage Queue
 add_executable(msg_queue source/hardware.c source/msg_queue.c)
 target_link_libraries(msg_queue ucos aikit)
+
+## Timer Interrupt
+add_executable(timer_interrupt source/hardware.c source/timer_interrupt.c)
+target_link_libraries(timer_interrupt ucos aikit)
