@@ -4,6 +4,7 @@
 
 #define _HARDWARE_C_ 
 #include <hardware.h>
+#include <ucos_ii.h>
 
 void hardware_init(void) {
   leds_init();
@@ -86,4 +87,13 @@ void keys_init(void) {
     .GPIO_Mode = GPIO_Mode_IN_FLOATING
   };
   GPIO_Init(GPIOA,&key1);
+}
+
+static OS_CPU_SR cpu_sr = 0u;
+void __enter(){
+  OS_ENTER_CRITICAL();
+}
+void __exit(){
+  OS_EXIT_CRITICAL();
+  cpu_sr = 0u;
 }

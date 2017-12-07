@@ -1,5 +1,5 @@
 #include <ucos_ii.h>
-#include <logger.h>
+#include <aikit/kprint.h>
 #include <hardware.h>
 
 // Size of each task's stacks (# of WORDs)

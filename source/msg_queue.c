@@ -1,5 +1,5 @@
 #include <ucos_ii.h>
-#include <logger.h>
+#include <aikit/kprint.h>
 #include <hardware.h>
 
 
@@ -13,6 +13,8 @@ OS_STK TaskStartStk[TASK_STK_SIZE];
 // Tasks stacks
 OS_STK TaskStk1[N_TASKS][TASK_STK_SIZE];
 OS_STK TaskStk2[N_TASKS][TASK_STK_SIZE];
+// Control task
+OS_STK TaskConStk[TASK_STK_SIZE];
 // Parameters to pass to each task
 INT8U  TaskData1[N_TASKS];
 INT8U  TaskData2[N_TASKS];
@@ -25,8 +27,8 @@ void* Msg1[6];
 void* Msg2[6];
 
 // Tasks
-void Task1(void *pdata);
-void Task2(void *pdata);
+void Taskq1(void *pdata);
+void Taskq2(void *pdata);
 // Startup task
 void TaskStart(void *pdata);
 void TaskCon(void *pdata);
@@ -36,9 +38,9 @@ static void TaskStartCreateTasks(void);
 void main(void) {
 	INT8U err;
   hardware_init();
-  OS_CPU_SysTickInit(10000);
+  OS_CPU_SysTickInit(100000);
   OSInit();
-  put_with_unix_time_ln("uC/OS-II loaded\n");
+  kprint("uC/OS-II loaded\n");
   q1 = OSQCreate(&Msg1[0],6);
   q2 = OSQCreate(&Msg2[0],6);
   OSTaskCreate(TaskStart, (void *)0, &TaskStartStk[TASK_STK_SIZE - 1],4);
@@ -88,18 +90,12 @@ void Taskq1(void *pdata) {
     // apply for message
 		mg=OSQPend(q1,0,&err);
 		switch(err) {
-			case OS_NO_ERR:
-        put_with_unix_time("task ");
-        put_hex_u32(id);
-        put_str(" has got the ");
-        put_char((char *)mg);
-        put_str_ln("");
+			case OS_ERR_NONE:
+        kprint("Task %u has got the %s", id, (char *)mg);
         OSTimeDlyHMSM(0, 0, 0, 200*(4-id));
         break;
 			default :
-        put_with_unix_time("queue1 ");
-        put_hex_u32(id);
-        put_str_ln(" is empty.");
+        kprint("Queue1 %u is empty.",id);
         OSTimeDlyHMSM(0, 0, 0, 200*(4-id));
         break;
 		}
@@ -119,16 +115,96 @@ void Taskq2(void *pdata) {
     OSTimeDlyHMSM(0, 0, 2, 0);
 		mg=OSQPend(q2,0,&err);
 		switch(err) {
-      case OS_NO_ERR:
-					printk("    task %d has got the %s. \n", id+3, (char *)mg);
-					OSTimeDlyHMSM(0, 0, 0, 200*(4-id));
-					break;
-				default :
-					{
-					printk( "queue2  is empty,%d can't got the message.       \n",id+3);
-					OSTimeDlyHMSM(0, 0, 0, 200*(4-id));
-					break;
-					}                           /* If the queue is empty or has been deleted, print another string.*/
+      case OS_ERR_NONE:
+        kprint("Task %u has got the %s. \n", id+3, (char *)mg);
+        OSTimeDlyHMSM(0, 0, 0, 200*(4-id));
+        break;
+      default:
+        kprint("queue2  is empty,%u can't got the message.", id+3);
+        OSTimeDlyHMSM(0, 0, 0, 200*(4-id));
+        break;
 			}
 		}
+}
+
+/**
+ * Control task
+ */
+
+void  TaskCon (void *pdata) {
+	INT8U  i,j;
+	INT8U  err;
+	INT8U  note=1;
+	INT16U  del=3;
+	OS_EVENT *q;
+	char   ch[50];
+	OS_Q_DATA data;
+	static char *s[]={
+		"message0","message1","message2","message3","message4","message5"
+	};
+	static char *t[]={
+		"messageA","messageB","messageC","messageD","messageE","messageF"
+	};
+  while(1) {
+ 		kprint("Add message to queue1");
+		for( i = 0 ; i < 6 ; i++ ) {
+      // post message to q1 LIFO
+			err = OSQPostFront(q1,(void*)s[i]);
+			switch(err)	{
+				case OS_ERR_NONE:
+					kprint("the queue1 %u add %s",i,s[i]);
+          OSTimeDlyHMSM(0, 0, 0, 150);
+					break;
+				case OS_ERR_Q_FULL:
+					kprint("the queue1 is full, don't add.");
+					OSTimeDlyHMSM(0, 0, 0, 150);
+					break;
+				default:
+          break;
+      }
+    }
+    if(del>=0)
+      kprint("Add message to queue2");
+		for( j = 0 ; j < 6 ; j++ ) {
+      // post message to q2 FIFO
+			err = OSQPost(q2,(void*)t[j]);
+			switch(err)	{
+				case OS_ERR_NONE:
+					kprint("the queue2 %u add %s",j,t[j]);
+          OSTimeDlyHMSM(0, 0, 0, 150);
+					break;
+				case OS_ERR_Q_FULL:
+					kprint("the queue2 is full, don't add.");
+					OSTimeDlyHMSM(0, 0, 0, 150);
+					break;
+				default:
+          break;
+      }
+    }
+		if(del>=0)
+			if(note==1) {
+				OSQFlush(q2);
+				kprint("Clear up the queue2");
+				note=0;
+      }
+			else
+				note=1;
+    // get the information about q2
+		err=OSQQuery(q2,&data);
+		if(err==OS_ERR_NONE) {
+			kprint("the queue2'information");
+			kprint("NextMsg:%s,  NumMsg:%u,  QSize:%u.",(char *)data.OSMsg,data.OSNMsgs,data.OSQSize);
+			}
+		OSTimeDlyHMSM(0, 0, 0, 500);
+ 		if(del==0){
+      // delete the  q2 
+			q=OSQDel(q2,OS_DEL_ALWAYS,&err);
+			if(q==(OS_EVENT *)0)
+	    	kprint("Already successful delete queue2");
+    }
+		else {
+			del--;
+			kprint("Not successful delete queue2");
+		}
+  }
 }

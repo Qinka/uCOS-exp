@@ -1,5 +1,5 @@
 #include <ucos_ii.h>
-#include <logger.h>
+#include <aikit/kprint.h>
 #include <hardware.h>
 
 
@@ -22,7 +22,7 @@ INT8U  *CommMsg3;
 // Store OSMemCreate return value
 INT8U  *CommMem;
 // init the data
-INT8U   CommBuf[2][128];。
+INT8U   CommBuf[2][128];
 
 // Tasks stacks
 OS_STK        TaskStk[N_TASKS][TASK_STK_SIZE];
@@ -49,7 +49,7 @@ void  main (void) {
   hardware_init();
   OS_CPU_SysTickInit(10000);
   OSInit();
-  put_with_unix_time_ln("uC/OS-II loaded\n");
+  kprint("uC/OS-II loaded\n");
   OSTaskCreate(TaskStart, (void *)0, &TaskStartStk[TASK_STK_SIZE - 1],4);
   OSStart();
 }
@@ -71,21 +71,13 @@ static void DisplayMemStat() {
   INT8U		 s[4][50];
 	OS_MEM_DATA mem_data;
 	OSMemQuery(CommMem, &mem_data);
-	put_with_unix_time_ln("");
 
-	put_with_unix_time("The pointer to the begining of memory address is: ");
-  put_hex_u32((uint32_t)(mem_data.OSAddr)); put_str_ln("");
-  
-	put_with_unix_time("the size of blocks in this memory area is: ");
-  put_hex_u32((uint32_t)(mem_data.OSBlkSize)); put_str_ln("");
-
-	put_with_unix_time("the number of free blocks in this memory area is: "
-  put_hex_u32((uint32_t)(mem_data.OSNFree)); put_str_ln("");
-
-	put_with_unix_time("the number of using blocks in this memory area is: "
-  put_hex_u32((uint32_t)(mem_data.OSNUsed)); put_str_ln("");
-
-	put_with_unix_time_ln("");
+	kprint("");
+	kprint("The pointer to the begining of memory address is: %u",(uint32_t)(mem_data.OSAddr));
+	kprint("the size of blocks in this memory area is: %u", (uint32_t)(mem_data.OSBlkSize));
+	kprint("the number of free blocks in this memory area is: %u", (uint32_t)(mem_data.OSNFree));
+	kprint("the number of using blocks in this memory area is: %u", (uint32_t)(mem_data.OSNUsed));
+	kprint("");
 	OSTimeDlyHMSM(0,0,2,0);
 }
 
@@ -109,26 +101,26 @@ void ReleaseMem(int i) {
 	switch(i) {
 		case 3:
       err=OSMemPut(CommMem,CommMsg3);
-      if (err == OS_NO_ERR) // Release Memory Block
-        put_with_unix_time_ln("Third memory has been released.");
+      if (err == OS_ERR_NONE) // Release Memory Block
+        kprint("Third memory has been released.");
 			else
-				put_with_unix_time_ln("Third memory didn't exist.");
+				kprint("Third memory didn't exist.");
       break;
 
 		case 2:
       err=OSMemPut(CommMem,CommMsg2);
-		  if (err == OS_NO_ERR) // Release Memory Block
-		    put_with_unix_time_ln("Second memory has been released.");
+		  if (err == OS_ERR_NONE) // Release Memory Block
+		    kprint("Second memory has been released.");
 			else
-			  put_with_unix_time_ln("Second memory didn't been released.");
+			  kprint("Second memory didn't been released.");
 		break;
 
 		case 1:
       err=OSMemPut(CommMem,CommMsg1);
-		   	if (err == OS_NO_ERR) // Release Memory Block
-         put_with_unix_time_ln("First memory has been released.");
+		   	if (err == OS_ERR_NONE) // Release Memory Block
+          kprint("First memory has been released.");
 				else
-				  put_with_unix_time_ln("First memory didn't been released.");
+				  kprint("First memory didn't been released.");
 		break;
 	}
 }
@@ -145,7 +137,7 @@ static void TaskStartCreateTasks(void) {
  * Task
  */
 void Task(void *pdata) {
-  INT8U  *err;
+  INT8U  err;
   INT16S i=0;
 
 	MemInfo(pdata);
@@ -153,14 +145,14 @@ void Task(void *pdata) {
 
 	OSTimeDly(100);
 
-  while {
+  while(1) {
 		if(i==0) {
 		  CommMsg1 = OSMemGet(CommMem,&err);
-			if (err == OS_NO_ERR) // Released
-        put_with_unix_time_ln("First memory application HAS accept.");
+			if (err == OS_ERR_NONE) // Released
+        kprint("First memory application HAS accept.");
 			else
-				put_with_unix_time_ln("First memory alpplication NOT accept.");
-  		MemInfo(pdata)
+				kprint("First memory alpplication NOT accept.");
+  		MemInfo(pdata);
   		DisplayMemStat();
   		OSTimeDly(100);
 	  	i++;
@@ -175,10 +167,10 @@ void Task(void *pdata) {
 	 	}
 		else if(i==1)	{
       CommMsg2=OSMemGet(CommMem,&err);
-			if (err == OS_NO_ERR) // Allocated
-				put_with_unix_time_ln("Second memory application HAS accept.");
+			if (err == OS_ERR_NONE) // Allocated
+				kprint("Second memory application HAS accept.");
 			else
-			  put_with_unix_time_ln("Second memory alpplication NOT accept.");
+			  kprint("Second memory alpplication NOT accept.");
   		MemInfo(pdata);
       DisplayMemStat();
       OSTimeDly(100);
@@ -186,10 +178,10 @@ void Task(void *pdata) {
 		}
 		else {
 			CommMsg3=OSMemGet(CommMem,&err);
-			if (err == OS_NO_ERR) // Allocated
-			  put_with_unix_time_ln("Third memory application HAS accept.");
+			if (err == OS_ERR_NONE) // Allocated
+			  kprint("Third memory application HAS accept.");
 			else
-        put_with_unix_time_ln("Third memory alpplication NOT accept.\n");
+        kprint("Third memory alpplication NOT accept.\n");
 			MemInfo(pdata);
 			DisplayMemStat();
 			OSTimeDly(100);

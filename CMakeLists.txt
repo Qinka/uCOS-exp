@@ -39,3 +39,11 @@ set (CMAKE_EXE_LINKER_FLAGS " -T ${PROJECT_SOURCE_DIR}/ucos-ii-stm32f103ze/ucos.
 ## task manage
 add_executable(task_manage source/hardware.c source/task_manage.c)
 target_link_libraries(task_manage ucos aikit)
+
+## Memory Manage
+add_executable(mem_manage source/hardware.c source/mem_manage.c)
+target_link_libraries(mem_manage ucos aikit)
+
+## Mesage Queue
+add_executable(msg_queue source/hardware.c source/msg_queue.c)
+target_link_libraries(msg_queue ucos aikit)
