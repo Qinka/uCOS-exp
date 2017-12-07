@@ -34,7 +34,7 @@ void  main (void) {
   hardware_init();
   OS_CPU_SysTickInit(10000);
   OSInit();
-  kprint("%u: Ucos-II loaded\n");
+  kprint("Ucos-II loaded\n");
   OSTaskCreate(TaskStart, (void *)0, (OS_STK*)&TaskStartStk[TASK_STK_SIZE - 1], 4);
   OSStart();
 }

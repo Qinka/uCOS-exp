@@ -59,3 +59,7 @@ target_link_libraries(prio_inherit ucos aikit)
 ## Priority Turn over
 add_executable(prio_turnover source/hardware.c source/prio_turnover.c)
 target_link_libraries(prio_turnover ucos aikit)
+
+## Philosopher eating
+add_executable(eating source/hardware.c source/eating.c)
+target_link_libraries(eating ucos aikit)
