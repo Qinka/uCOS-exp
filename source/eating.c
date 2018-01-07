@@ -82,9 +82,9 @@ void  TaskStartCreateTasks (void) {
 // Hunger
 static void TASK_Thinking_To_Hungry(INT8U data) {
   kprint("Philosopher %b is thinking.\n", data+1);
-  OSTimeDly(100);
+  OSTimeDly(50*(6-data));
 	kprint("Philosopher %b is hungry.  \n ", data+1);
-  OSTimeDly(100);
+  OSTimeDly(50*(6-data));
 }
 
 // Eat

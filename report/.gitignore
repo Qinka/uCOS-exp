@@ -1,0 +1,27 @@
+*.aux
+*.log
+*.pdf
+*.synctex.gz
+*.ignore.doc
+*~
+*.bak
+.markdown-preview.html
+\#*\#
+.\#
+## For plat different
+.platform/platform.mk
+.platform/md5.*
+
+
+*.htmlout
+
+
+## for bibtex
+*.bbl
+*.blg
+
+## for latex
+*.nav
+*.out
+*.snm
+*.toc
